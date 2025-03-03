@@ -1,0 +1,9 @@
+displayName: JSON Body To Header
+summary: '[Demo] jsonbodyextract'
+type: middleware
+import: github.com/unbasical/traefik-json-body2header
+
+testData:
+  mappings:
+    - path: foo.bar
+      header: BAZ
