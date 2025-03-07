@@ -1,4 +1,4 @@
-package body2header
+package traefik_json_body2header
 
 import (
 	"bytes"
@@ -39,16 +39,23 @@ func TestExtractor_ServeHTTP(t *testing.T) {
 			error:   true,
 		},
 		{
-			name:    "top level",
+			name:    "single value",
 			input:   Map(map[string]any{"a": "b"}),
-			mapping: Mapping{Path: "a", Header: TestHeader},
+			mapping: Mapping{Property: "a", Header: TestHeader},
 			want:    "b",
+			error:   false,
+		},
+		{
+			name:    "multiple values",
+			input:   Map(map[string]any{"a": []int{1, 2, 3}}),
+			mapping: Mapping{Property: "a", Header: TestHeader},
+			want:    "[1,2,3]",
 			error:   false,
 		},
 		{
 			name:    "no value found",
 			input:   Map(map[string]any{"a": "b"}),
-			mapping: Mapping{Path: "a.b", Header: TestHeader},
+			mapping: Mapping{Property: "b", Header: TestHeader},
 			want:    "",
 			error:   false,
 		},
@@ -115,14 +122,14 @@ type validationHandler struct {
 	error  bool
 }
 
-func (vh validationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (vh validationHandler) ServeHTTP(_ http.ResponseWriter, r *http.Request) {
 	if vh.header == "" {
 		return
 	}
 
 	val := r.Header.Get(vh.header)
 	if val != vh.want && !vh.error {
-		vh.t.Errorf("expected %s but got %s", vh.want, val)
+		vh.t.Errorf("expected [%s] but got [%s]", vh.want, val)
 		vh.t.FailNow()
 	}
 }

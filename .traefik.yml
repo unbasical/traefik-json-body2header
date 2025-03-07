@@ -1,9 +1,10 @@
 displayName: JSON Body To Header
-summary: '[Demo] jsonbodyextract'
+summary: 'This plugin provides a middleware, which enables user to extract fields from a json request body into the header'
 type: middleware
 import: github.com/unbasical/traefik-json-body2header
 
 testData:
   mappings:
-    - path: foo.bar
+    - match: .*
+      property: foo
       header: BAZ
